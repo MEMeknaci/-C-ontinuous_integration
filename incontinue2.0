@@ -1,0 +1,163 @@
+#!/bin/bash
+
+REPO_NAME=$1
+REPO_USERNAME=$2
+VG_CHECK=0
+
+function warnings()
+{
+    echo -e "\e[33m [ WARNINGS CHECK... ] \e[37m"
+    sleep 1.2
+    echo -e "\e[36m [ WARNINGS LOGS ] \e[37m" > ../tests.log
+    make re >> ../tests.log
+    make re
+    if [ ${?} != '0' ]; then
+        sleep 0.5
+        echo -e "\e[31m [ WARNINGS ERROR / TRY AGAIN.. ]"
+        exit
+    else
+        clear
+        echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+    fi
+}
+
+function norms()
+{
+    echo -e "\e[33m [ NORMS CHECK... ] \e[37m"
+    make fclean &>/dev/null
+    sleep 1
+    norminette -T4 -i4 -A -v | sed -n '/rule/,$p'
+    echo -e "\n\e[36m [ NORMS LOGS ] \e[37m" >> ../tests.log
+    norminette -T4 -i4 -A -v | sed -n '/rule/,$p' >> ../tests.log
+    read -p "Do you think you don't have any coding style error ? [Y/N] " -r check_norms
+    if [[ $check_norms =~ ^[Yy]$  ]]; then
+        clear
+        echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+        echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ]"
+    elif [[ $check_norms =~ ^[Nn]$ ]]; then
+        echo -e "\e[31m [ NORMS ERROR / TRY AGAIN.. ]"
+        exit
+    fi
+}
+
+function valgriind()
+{
+    echo -e "\e[33m [ VALGRIND ERROR CHECK... ] \e[37m"
+    make re &>/dev/null
+    read -p "Do command :  " -r vg_command
+    script -c "valgrind $vg_command" output.log &>/dev/null
+    echo -e "\n\e[36m [ VALGRIND LOGS ] \e[37m" >> ../tests.log
+    cat output.log | sed -n '/Memcheck/,/contexts/p' >> ../tests.log
+    gcc ../check_program/check_valgrind.c ../check_program/my_str_to_word_tab.c
+    ./a.out output.log
+    if [ ${?} = '0' ]; then
+        echo -n " [==      ] 25%"
+        sleep 0.65
+        echo -e "\r [====    ] 50%"
+        sleep 0.65
+        clear
+        echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+        echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ] \e[37m"
+        echo -e "\e[32m [ VALGRIND ERROR ✔️  /\e[33m VALGRIND FREE CHECK... ] \e[37m"
+        sleep 1
+        gcc ../check_program/check_free.c ../check_program/my_str_to_word_tab.c
+        ./a.out output.log
+        if [ ${?} = '0' ]; then
+            rm a.out && rm output.log
+            echo -n " [======  ] 75%"
+            sleep 0.8
+            echo -e "\r [========] 100%"
+            sleep 0.8
+            clear
+            echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+            echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ]"
+            echo -e "\e[32m [ VALGRIND ERROR ✔️  / VALGRIND FREE ✔️  ]"
+            VG_CHECK=1
+        else
+            echo -n " [======  ] 75%"
+            sleep 0.8
+            echo -e "\r [========] 100%"
+            sleep 0.8
+            clear
+            echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+            echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ]"
+            echo -e "\e[32m [ VALGRIND ERROR ✔️  /\e[33m NOT ENOUGH FREE ! ]"
+        fi
+    else
+        echo -e "\e[31m [ TOO MANY VALGRIND ERROR / TRY AGAIN.. ]"
+        exit
+    fi
+}
+
+function criterion()
+{
+    echo -e "\e[33m [ TESTS CRITERION CHECK... ] \e[37m"
+    sleep 1.7
+    cd tests &>/dev/null
+    if [ ${?} = '0' ]; then
+        cd ..
+        echo -e "\n\e[36m [ CRITERION LOGS ] \e[37m" >> ../tests.log
+        script -c "make tests_run" cr_log &>/dev/null
+        cat cr_log | sed -n '/make/,/Synthèse/p' >> ../tests.log
+        make tests_run
+        if [ ${?} = '0' ]; then
+            sleep 1.5
+            rm cr_log
+            if [ $VG_CHECK == 1 ]; then
+                clear
+                echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+                echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ]"
+                echo -e "\e[32m [ VALGRIND ERROR ✔️  / VALGRIND FREE ✔️  ]"
+                echo -e "\e[32m [ TESTS CRITERION ✔️  / A REAL BOSS.. ]"
+            else
+                echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+                echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ] \e[37m"
+                echo -e "\e[32m [ VALGRIND ERROR ✔️  /\e[33m NOT ENOUGH FREE ! ]"
+                echo -e "\e[32m [ TESTS CRITERION ✔️  / A REAL BOSS.. ]"
+            fi
+        else
+            echo -e "\e[31m [ TESTS CRITERION ERROR / TRY AGAIN.. ]"
+            exit
+        fi
+    else
+        if [ $VG_CHECK == 1 ]; then
+            clear
+            echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+            echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ]"
+            echo -e "\e[32m [ VALGRIND ERROR ✔️  / VALGRIND FREE ✔️  ]"
+            echo -e "\e[35m [ NO TESTS CRITERION :( ]"
+        else
+            clear
+            echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+            echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ] \e[37m"
+            echo -e "\e[32m [ VALGRIND ERROR ✔️  /\e[33m NOT ENOUGH FREE ! ]"
+            echo -e "\e[35m [ NO TESTS CRITERION :( ]"
+        fi
+    fi
+}
+
+function usage()
+{
+    echo "*CONTINIOUS INTEGRATION FAILED*"
+    echo "syntax error.."
+    echo $1
+    echo "USAGE"
+    echo "    ./incontinue2.0 {REPO_NAME} {REPO_USERNAME}"
+    exit 1
+}
+
+if [[ -z "$2" ]]; then
+    usage "incontinue: not enough arguments"
+elif [[ "$3" ]]; then
+    usage "incontinue: too many arguments"
+fi
+rm -rf $REPO_NAME &>/dev/null
+git clone git@git.epitech.eu:/$REPO_USERNAME/$REPO_NAME
+if [ ${?} != '0' ]; then
+    usage "incontinue: invalid repository username or repository name"
+fi
+cd $REPO_NAME
+warnings
+norms
+valgriind
+criterion

@@ -2,6 +2,7 @@
 
 REPO_NAME=$1
 REPO_USERNAME=$2
+RECURSIVE=0
 VG_CHECK=0
 
 function warnings()
@@ -29,15 +30,21 @@ function norms()
     norminette -T4 -i4 -A -v | sed -n '/rule/,$p'
     echo -e "\n\e[36m [ NORMS LOGS ] \e[37m" >> ../tests.log
     norminette -T4 -i4 -A -v | sed -n '/rule/,$p' >> ../tests.log
-    read -p "Do you think you don't have any coding style error ? [Y/N] " -r check_norms
-    if [[ $check_norms =~ ^[Yy]$  ]]; then
-        clear
-        echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
-        echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ]"
-    elif [[ $check_norms =~ ^[Nn]$ ]]; then
-        echo -e "\e[31m [ NORMS ERROR / TRY AGAIN.. ]"
-        exit
-    fi
+    while [ $RECURSIVE != 1 ]
+    do
+        read -p "Do you think you don't have any coding style error ? [Y/N] " -r check_norms
+        if [[ $check_norms =~ ^[Yy]$  ]]; then
+            clear
+            echo -e "\e[32m [ WARNINGS ✔️  / GOOD JOB BIG BOY.. ]"
+            echo -e "\e[32m [ NORMS ✔️  / NICE ONE.. ]"
+            RECURSIVE=1
+        elif [[ $check_norms =~ ^[Nn]$ ]]; then
+            echo -e "\e[31m [ NORMS ERROR / TRY AGAIN.. ]"
+            exit
+        else
+            echo -e "\e[34m [ WRONG ANSWER ] \e[37m"
+        fi
+    done
 }
 
 function valgriind()

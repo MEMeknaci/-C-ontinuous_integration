@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function test_one()
+{
+    :
+    # PUT YOUR BASH TESTS HERE #
+}
+
+function bash_tests()
+{
+    # PUT YOUR FUNCTION
+    # AND CHECK THE RETURN (1 WHEN IT FAIL)
+    # EXAMPLE :
+    test_one
+    if [ ${?} != '0' ]; then
+        return 1
+    fi
+    return 0
+}

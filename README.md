@@ -6,7 +6,7 @@ A Continous integration with a bash script for your Epitech projects
 
 Features:
 ----
-- Clone your project on the EPITECH "moulinette" environment (coming soon.. or [epitech-env](https://github.com/MEMeknaci/epitech-env))
-- 
-- 
+- Clone your project on the __EPITECH "moulinette" environment__ (coming soon.. or [epitech-env](https://github.com/MEMeknaci/epitech-env))
+- Testing __warnings__ on compilation
+- Testing __norms__
 - 

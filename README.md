@@ -1,5 +1,5 @@
 # -C-ontinuous_integration
-A Continous integration with a bash script for your Epitech projects
+A Continous integration with a bash script for your C Epitech projects
 
 <br />
 

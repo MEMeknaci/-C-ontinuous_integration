@@ -15,9 +15,9 @@ Features:
 <br />
 
 ## Usage:
-`./incontinue2.0 {REPO_NAME} {REPO_USERNAME}`
+`./incontinue2.0 {REPO_NAME} (ssh protocol)`
 
 
 ### Example:
-`./incontinue2.0 PSU_my_printf_2019 albert.petitjean@epitech.eu`
+`./incontinue2.0 git@github.com:EpitechIT2020/B-PSU-400-NCY-4-1-nmobjdump-albert.petitjean.git`
 

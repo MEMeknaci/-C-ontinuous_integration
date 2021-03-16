@@ -2,8 +2,8 @@
 
 source check_program/bash_tests
 
-REPO_NAME=$1
-REPO_USERNAME=$2
+GIT_NAME=$1
+REPO_NAME=0
 RECURSIVE=0
 VG_CHECK=0
 
@@ -17,6 +17,7 @@ function warnings()
     if [ ${?} != '0' ]; then
         sleep 0.5
         echo -e "\e[31m [ WARNINGS ERROR / TRY AGAIN.. ]"
+        ls
         exit
     else
         clear
@@ -54,6 +55,11 @@ function valgriind()
     echo -e "\e[33m [ VALGRIND ERROR CHECK... ] \e[37m"
     make re &>/dev/null
     read -p "Do command :  " -r vg_command
+    $vg_command &>/dev/null
+    if [ ${?} = '127' ] || [ $? = '126' ]; then
+        echo -e "\e[31m [ MAUVAISE COMMANDE ! ]"
+        exit 1
+    fi
     script -c "valgrind $vg_command" output.log &>/dev/null
     echo -e "\n\e[36m [ VALGRIND LOGS ] \e[37m" >> ../tests.log
     cat output.log | sed -n '/Memcheck/,/contexts/p' >> ../tests.log
@@ -147,16 +153,18 @@ function criterion()
 
 function tests()
 {
-    echo -e -n "\n\e[33m [ $REPO_NAME TESTS CHECK... ] \e[37m\n"
+    echo -e -n "\n\e[33m [ $REPO_R_NAME TESTS CHECK... ] \e[37m\n"
     sleep 1.4
     bash_tests
     if [ ${?} = '0' ]; then
-        echo -e "\r\n\e[32m [ $REPO_NAME TESTS ✔️  ] \e[37m"
+        echo -e "\r\n\e[32m [ $REPO_R_NAME TESTS ✔️  ] \e[37m"
         echo -e "\e[32m\e[5m\e[1m      [ CLEAN WORK ]\e[25m"
+        make fclean &>/dev/null
         exit 0
     else
-        echo -e "\r\n\e[31m [ $REPO_NAME TESTS ERROR ] \e[37m"
+        echo -e "\r\n\e[31m [ $REPO_R_NAME TESTS ERROR ] \e[37m"
         echo -e "\e[31m\e[5m\e[1m      [ TESTS FAILED ]\e[25m"
+        make fclean &>/dev/null
         exit 1
     fi
 }
@@ -171,17 +179,23 @@ function usage()
     exit 1
 }
 
-if [[ -z "$2" ]]; then
+if [[ -z "$1" ]]; then
     usage "incontinue: not enough arguments"
-elif [[ "$3" ]]; then
+elif [[ "$2" ]]; then
     usage "incontinue: too many arguments"
 fi
-rm -rf $REPO_NAME &>/dev/null
-git clone git@git.epitech.eu:/$REPO_USERNAME/$REPO_NAME
+REPO_NAME="${GIT_NAME#*/}"
+REPO_R_NAME=$(echo $REPO_NAME | rev | cut -c 5- | rev)
+if [ -d  "$REPO_R_NAME" ]; then
+    rm -rf $REPO_R_NAME &>/dev/null
+fi
+echo -e "\e[33m [ CLONAGE DU PROJET TECH... ] \e[37m"
+git clone $GIT_NAME 
 if [ ${?} != '0' ]; then
     usage "incontinue: invalid repository or connection lost"
 fi
-cd $REPO_NAME
+echo $REPO_R_NAME
+cd $REPO_R_NAME
 warnings
 norms
 valgriind

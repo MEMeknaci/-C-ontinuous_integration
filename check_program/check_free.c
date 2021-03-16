@@ -53,7 +53,8 @@ static char *find_free(char *buffer)
     for (int i = 0; tab[i]; i++) {
         for (int j = 0; tab[i][j]; j++) {
             if (tab[i][j] == 'a' && tab[i][j+1] == 'l'
-                && tab[i][j+2] == 'l' && tab[i][j+3] == 'o') {
+                && tab[i][j+2] == 'l' && tab[i][j+3] == 'o'
+                && tab[i][j-1] == ' ') {
                 line = strdup(tab[i]);
                 free_tab(tab);
                 return (line);

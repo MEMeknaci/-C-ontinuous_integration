@@ -1,4 +1,4 @@
-# epi_continuous_integration
+# -C-ontinuous_integration
 A Continous integration with a bash script for your Epitech projects
 
 <br />

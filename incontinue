@@ -175,7 +175,7 @@ function usage()
     echo "syntax error.."
     echo $1
     echo "USAGE"
-    echo "    ./incontinue2.0 {REPO_NAME} {REPO_USERNAME}"
+    echo "    ./incontinue {REPO_NAME} {REPO_USERNAME}"
     exit 1
 }
 

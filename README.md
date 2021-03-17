@@ -14,6 +14,12 @@ Features:
 
 <br />
 
+Requirements:
+----
+- The program that checks norms : [norminette](https://github.com/42Paris/norminette.git)
+
+<br />
+
 ## Usage:
 `./incontinue2.0 {REPO_NAME} (ssh protocol)`
 

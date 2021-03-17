@@ -21,9 +21,9 @@ Requirements:
 <br />
 
 ## Usage:
-`./incontinue2.0 {REPO_NAME} (ssh protocol)`
+`./incontinue {REPO_NAME} (ssh protocol)`
 
 
 ### Example:
-`./incontinue2.0 git@github.com:EpitechIT2020/B-PSU-400-NCY-4-1-nmobjdump-albert.petitjean.git`
+`./incontinue git@github.com:EpitechIT2020/B-PSU-400-NCY-4-1-nmobjdump-albert.petitjean.git`
 
